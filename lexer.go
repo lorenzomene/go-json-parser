@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	// "unicode"
+	"unicode"
 )
 
 func Lex(s string) ([]Token, error) {
@@ -35,6 +35,19 @@ func Lex(s string) ([]Token, error) {
 			}
 			tokens = append(tokens, Token{Type: NUMBER, Value: string(runes[:j])})
 			runes = runes[j:]
+		default:
+			// check for numbers and - (negative numbers)
+			if unicode.IsDigit(char) || char == '-' {
+				j := 0
+				if char == '-' {
+					j = 1 // skip - sign for digit check (it will still be included to the final token)
+				}
+				for j < len(runes) && (unicode.IsDigit(runes[j]) || runes[j] == '.') {
+					j++
+				}
+				tokens = append(tokens, Token{Type: NUMBER, Value: string(runes[:j])})
+				runes = runes[j:]
+			}
 		}
 		runes = runes[1:]
 	}
