@@ -9,6 +9,9 @@ const (
 	COMMA
 	STRING
 	NUMBER
+	TRUE
+	FALSE
+	NULL
 )
 
 type Token struct {

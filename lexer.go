@@ -33,8 +33,8 @@ func Lex(s string) ([]Token, error) {
 			if j >= len(runes) { //string end not found
 				return nil, errors.New("unterminated string")
 			}
-			tokens = append(tokens, Token{Type: COMMA})
-			runes = runes[1:]
+			tokens = append(tokens, Token{Type: NUMBER, Value: string(runes[:j])})
+			runes = runes[j:]
 		}
 		runes = runes[1:]
 	}
