@@ -64,9 +64,13 @@ func Lex(s string) ([]Token, error) {
 					return nil, fmt.Errorf("unexpected keyword: %s", word)
 				}
 				runes = runes[j:]
+			} else {
+				return nil, fmt.Errorf("unexpected character: %c", char)
 			}
 		}
-		runes = runes[1:]
+		if len(runes) > 0 && (unicode.IsSpace(char) || !unicode.IsLetter(char) && !unicode.IsDigit(char) && char != '"' && char != '{' && char != '}' && char != ':' && char != ',') {
+			runes = runes[1:]
+		}
 	}
 	fmt.Println(tokens)
 	return tokens, nil
