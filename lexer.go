@@ -40,7 +40,7 @@ func Lex(s string) ([]Token, error) {
 			if unicode.IsDigit(char) || char == '-' {
 				j := 0
 				if char == '-' {
-					j = 1 // skip - sign for digit check (it will still be included to the final token)
+					j = 1
 				}
 				for j < len(runes) && (unicode.IsDigit(runes[j]) || runes[j] == '.') {
 					j++
@@ -64,14 +64,14 @@ func Lex(s string) ([]Token, error) {
 					return nil, fmt.Errorf("unexpected keyword: %s", word)
 				}
 				runes = runes[j:]
+			} else if unicode.IsSpace(char) {
+				runes = runes[1:]
 			} else {
 				return nil, fmt.Errorf("unexpected character: %c", char)
 			}
 		}
-		if len(runes) > 0 && (unicode.IsSpace(char) || !unicode.IsLetter(char) && !unicode.IsDigit(char) && char != '"' && char != '{' && char != '}' && char != ':' && char != ',') {
-			runes = runes[1:]
-		}
+
 	}
-	fmt.Println(tokens)
+	// fmt.Println(tokens)
 	return tokens, nil
 }
