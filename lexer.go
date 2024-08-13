@@ -13,16 +13,16 @@ func Lex(s string) ([]Token, error) {
 
 		switch char {
 		case '{':
-			tokens = append(tokens, Token{Type: LEFT_BRACE})
+			tokens = append(tokens, Token{Type: LEFT_BRACE, Value: "{"})
 			runes = runes[1:]
 		case '}':
-			tokens = append(tokens, Token{Type: RIGHT_BRACE})
+			tokens = append(tokens, Token{Type: RIGHT_BRACE, Value: "}"})
 			runes = runes[1:]
 		case ':':
-			tokens = append(tokens, Token{Type: COLON})
+			tokens = append(tokens, Token{Type: COLON, Value: ":"})
 			runes = runes[1:]
 		case ',':
-			tokens = append(tokens, Token{Type: COMMA})
+			tokens = append(tokens, Token{Type: COMMA, Value: ","})
 			runes = runes[1:]
 		case '"': //string start
 			j := 1
@@ -33,8 +33,8 @@ func Lex(s string) ([]Token, error) {
 			if j >= len(runes) { //string end not found
 				return nil, errors.New("unterminated string")
 			}
-			tokens = append(tokens, Token{Type: NUMBER, Value: string(runes[:j])})
-			runes = runes[j:]
+			tokens = append(tokens, Token{Type: STRING, Value: string(runes[1:j])})
+			runes = runes[j+1:]
 		default:
 			// check for numbers and - (negative numbers)
 			if unicode.IsDigit(char) || char == '-' {
@@ -46,6 +46,23 @@ func Lex(s string) ([]Token, error) {
 					j++
 				}
 				tokens = append(tokens, Token{Type: NUMBER, Value: string(runes[:j])})
+				runes = runes[j:]
+			} else if unicode.IsLetter(char) {
+				j := 0
+				for j < len(runes) && unicode.IsLetter(runes[j]) {
+					j++
+				}
+				word := string(runes[:j])
+				switch word {
+				case "true":
+					tokens = append(tokens, Token{Type: TRUE, Value: word})
+				case "false":
+					tokens = append(tokens, Token{Type: FALSE, Value: word})
+				case "null":
+					tokens = append(tokens, Token{Type: NULL, Value: word})
+				default:
+					return nil, fmt.Errorf("unexpected keyword: %s", word)
+				}
 				runes = runes[j:]
 			}
 		}
