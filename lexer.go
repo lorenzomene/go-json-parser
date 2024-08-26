@@ -18,6 +18,12 @@ func Lex(s string) ([]Token, error) {
 		case '}':
 			tokens = append(tokens, Token{Type: RIGHT_BRACE, Value: "}"})
 			runes = runes[1:]
+		case '[':
+			tokens = append(tokens, Token{Type: LEFT_BRACKET, Value: "["})
+			runes = runes[1:]
+		case ']':
+			tokens = append(tokens, Token{Type: RIGHT_BRACKET, Value: "]"})
+			runes = runes[1:]
 		case ':':
 			tokens = append(tokens, Token{Type: COLON, Value: ":"})
 			runes = runes[1:]
