@@ -4,15 +4,17 @@ import (
 	"fmt"
 )
 
-func main() {
-	res, err := from_string("{}")
-	fmt.Println(res)
+func ParseJSON(jsonString string) (interface{}, error) {
+	tokens, err := Lex(jsonString)
 	if err != nil {
-		fmt.Println(err)
+		return nil, fmt.Errorf("lexing failed: %v", err)
 	}
-}
 
-func from_string(jsonString string) (bool, error) {
-	fmt.Println(jsonString)
-	return true, nil
+	parser := NewParser(tokens)
+	result, err := parser.Parse()
+	if err != nil {
+		return nil, fmt.Errorf("parsing failed: %v", err)
+	}
+
+	return result, nil
 }
