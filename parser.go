@@ -40,22 +40,52 @@ func (p *Parser) Parse() (interface{}, error) {
 
 	switch token.Type {
 	case LEFT_BRACE:
-		p.parseObject()
+		return p.parseObject()
 	case LEFT_BRACKET:
-		p.parseArray()
+		return p.parseArray()
+	default:
+		return nil, fmt.Errorf("unexpected token: %v, expected '{' or '['", token.Type)
 	}
-	return nil, fmt.Errorf("unexpected token: %v, expected '{' or '['", token.Type)
 }
 
-func (p *Parser) parseArray() {
+func (p *Parser) parseArray() ([]interface{}, error) {
+	var arr []interface{}
 
+	if p.nextToken().Type != LEFT_BRACKET {
+		return nil, fmt.Errorf("unexpected token, expected '[ (LEFT_BRACKET) at the start of an array")
+	}
+
+	for {
+		token := p.peekToken()
+
+		if token.Type == RIGHT_BRACKET {
+			p.nextToken()
+			break
+		}
+
+		value, err := p.parseValue()
+		if err != nil {
+			return nil, err
+		}
+
+		arr = append(arr, value)
+
+		token = p.peekToken()
+		if token.Type == COMMA {
+			p.nextToken()
+		} else if token.Type != RIGHT_BRACKET {
+			return nil, fmt.Errorf("expected COMMA or RIGHT_BRACKET, got %v", token.Type)
+		}
+	}
+
+	return arr, nil
 }
 
 func (p *Parser) parseObject() (map[string]interface{}, error) {
 	obj := make(map[string]interface{})
 
 	if p.nextToken().Type != LEFT_BRACE {
-		return nil, fmt.Errorf("unexpected token %v, expected '{'(LEFT_BRACE) at the start of an object", p.nextToken().Type)
+		return nil, fmt.Errorf("unexpected token, expected '{' (LEFT_BRACE) at the start of an object")
 	}
 
 	for {
@@ -120,8 +150,7 @@ func (p *Parser) parseValue() (interface{}, error) {
 	case LEFT_BRACE:
 		return p.parseObject()
 	case LEFT_BRACKET:
-		// return p.parseArray()
-		return nil, nil
+		return p.parseArray()
 	default:
 		return nil, fmt.Errorf("unexpected token: %v", token.Type)
 	}
