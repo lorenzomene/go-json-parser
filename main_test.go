@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -51,42 +50,17 @@ func TestParseJSON(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ParseJSON() returned an error: %v", err)
 			}
-			if !deepEqual(result, tt.expected) {
-				fmt.Printf("Result: %#v\n", result)
-				fmt.Printf("Expected: %#v\n", tt.expected)
-				t.Errorf("ParseJSON() = %#v, expected %#v", result, tt.expected)
+			if !reflect.DeepEqual(result, tt.expected) {
+				t.Errorf("ParseJSON() = %v, expected %v", result, tt.expected)
 			}
 		})
 	}
 }
 
-func deepEqual(a, b interface{}) bool {
-	if reflect.DeepEqual(a, b) {
-		return true
+func TestParseJSONInvalid(t *testing.T) {
+	invalidJSON := `{"key": invalid}`
+	_, err := ParseJSON(invalidJSON)
+	if err == nil {
+		t.Fatalf("ParseJSON() expected to return an error for invalid JSON, but got nil")
 	}
-
-	switch av := a.(type) {
-	case []interface{}:
-		bv, ok := b.([]interface{})
-		if !ok {
-			return false
-		}
-
-		if len(av) == 0 && len(bv) == 0 {
-			return true
-		}
-		return reflect.DeepEqual(av, bv)
-	case map[string]interface{}:
-		bv, ok := b.(map[string]interface{})
-		if !ok {
-			return false
-		}
-
-		if len(av) == 0 && len(bv) == 0 {
-			return true
-		}
-		return reflect.DeepEqual(av, bv)
-	}
-
-	return false
 }

@@ -49,7 +49,7 @@ func (p *Parser) Parse() (interface{}, error) {
 }
 
 func (p *Parser) parseArray() ([]interface{}, error) {
-	var arr []interface{}
+	arr := []interface{}{}
 
 	if p.nextToken().Type != LEFT_BRACKET {
 		return nil, fmt.Errorf("unexpected token, expected '[ (LEFT_BRACKET) at the start of an array")
